@@ -12,16 +12,22 @@ const SearchParams = () => {
     animal: "",
     breed: "",
   });
+  const [page, setPage] = useState(0);
   const [animal, setAnimal] = useState("");
   const [breeds] = useBreedList(animal);
   const [adoptedPet] = useContext(AdoptedPetContext);
 
-  const results = useQuery(["search", requestParams], fetchSearch);
+  const results = useQuery(["search", requestParams, page], fetchSearch);
   const pets = results?.data?.pets ?? [];
+  const resultsPerPage =
+    results?.data?.endIndex - results?.data?.startIndex + 1;
+  const totalResults = results?.data?.numberOfResults ?? 0;
+  const totalPages = Math.ceil(totalResults / resultsPerPage);
 
   return (
-    <div className="search-params">
+    <div className="my-0 mx-auto w-11/12">
       <form
+        className="mb-10 flex flex-col items-center justify-center rounded-lg bg-gray-200 p-10 shadow-lg"
         action=""
         onSubmit={(e) => {
           e.preventDefault();
@@ -42,6 +48,7 @@ const SearchParams = () => {
         <label htmlFor="location">
           Location
           <input
+            className="search-input"
             name="location"
             type="text"
             id="location"
@@ -51,6 +58,7 @@ const SearchParams = () => {
         <label htmlFor="animal">
           Animal
           <select
+            className="search-input"
             id="animal"
             value={animal}
             onChange={(e) => {
@@ -67,7 +75,12 @@ const SearchParams = () => {
         </label>
         <label htmlFor="breed">
           Breed
-          <select id="breed" disabled={breeds.length === 0} name="breed">
+          <select
+            className="search-input grayed-out-disabled"
+            id="breed"
+            disabled={breeds.length === 0}
+            name="breed"
+          >
             <option value=""></option>
             {breeds.map((breed) => (
               <option key={breed} value={breed}>
@@ -76,9 +89,16 @@ const SearchParams = () => {
             ))}
           </select>
         </label>
-        <button>Submit</button>
+        <button className="color rounded border-none bg-orange-500 px-6 py-2 text-white hover:opacity-50">
+          Submit
+        </button>
       </form>
-      <Results pets={pets} />
+      <Results
+        pets={pets}
+        page={page}
+        onChange={setPage}
+        totalPages={totalPages}
+      />
     </div>
   );
 };
