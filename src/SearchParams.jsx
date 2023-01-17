@@ -60,6 +60,7 @@ const SearchParams = () => {
           <select
             className="search-input"
             id="animal"
+            name="animal"
             value={animal}
             onChange={(e) => {
               setAnimal(e.target.value);
